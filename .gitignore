@@ -1,0 +1,15 @@
+SpaceParser/bin
+SpaceParser/bin/Debug
+SpaceParser/bin/Debug/net9.0
+SpaceParser/bin/Debug/net9.0/SpaceParser
+SpaceParser/bin/Debug/net9.0/SpaceParser.deps.json
+SpaceParser/bin/Debug/net9.0/SpaceParser.dll
+SpaceParser/bin/Debug/net9.0/SpaceParser.pdb
+SpaceParser/bin/Debug/net9.0/SpaceParser.runtimeconfig.json
+SpaceParser/obj
+SpaceParser/obj/Debug
+SpaceParser/obj/project.assets.json
+SpaceParser/obj/project.nuget.cache
+SpaceParser/obj/SpaceParser.csproj.nuget.dgspec.json
+SpaceParser/obj/SpaceParser.csproj.nuget.g.props
+SpaceParser/obj/SpaceParser.csproj.nuget.g.targets
