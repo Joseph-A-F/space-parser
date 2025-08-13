@@ -14,16 +14,16 @@ public class SpaceParser
     private bool running;
     private string working_directory;
 
-    public FileCollection fileCollection;
+    public FileIndex index;
     public object file_index_lock;
 
     public SpaceParser()
     {
         this.args = new string[] { "" };
         this.TranscribeArguments();
-        this.parser = new Parser();
-        this.display = new ParserDisplay();
-        this.fileCollection = new FileCollection();
+        this.display = new ParserDisplay(this);
+        this.index = new FileIndex(this);
+        this.parser = new Parser(this);
         this.running = true;
         this.Run();
     }
@@ -31,7 +31,10 @@ public class SpaceParser
     private void Run()
     {
         Thread display_thread = new Thread(new ThreadStart(display.Run));
+        Thread parser_thread = new Thread(new ThreadStart(parser.Run));
+        parser_thread.Start();
         display_thread.Start();
+
     }
 
     public void TranscribeArguments()
