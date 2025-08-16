@@ -11,6 +11,7 @@ public class FileNode : IComparable
     public long filesize;
     public double score;
     public string filepath;
+    internal string filetype;
 
     public FileNode(string filename,
                     string filepath,
@@ -64,15 +65,12 @@ public class FileIndex // needs to be in a lock in order to be written to.
     {
         string filename = Path.GetFileName(filepath);
         FileAttributes fileAttributes = File.GetAttributes(filepath);
-        DateTime last_access_date = File.GetLastAccessTime(filepath);
+        DateTime last_access_date = File.GetCreationTime(filepath);
         long filesize = DirectorySize(new DirectoryInfo(filepath));
         FileNode newfile = new FileNode(filename, filepath, last_access_date, filesize);
+        newfile.filetype = "Folder";
 
-
-        newfile.date = last_access_date;
-        newfile.filesize = filesize;
-
-        System.Console.WriteLine($"appending {filepath}");
+        // System.Console.WriteLine($"appending {filepath}");
 
         files.Add(newfile);
         this.rescore();
@@ -119,7 +117,7 @@ public class FileIndex // needs to be in a lock in order to be written to.
         long filesize = new FileInfo(filepath).Length;
 
         FileNode newfile = new FileNode(filename, filepath, last_access_date, filesize);
-
+        newfile.filetype = "File";
         files.Add(newfile);
         // System.Console.WriteLine($"files count {files.Count}");
         this.rescore();
@@ -180,7 +178,7 @@ public class FileIndex // needs to be in a lock in order to be written to.
         FileNode string_list = files[index_start];
 
 
-        string answer = $"{index_start + 1,-4} | {string_list.score.ToString("0.00"),-5} {string_list.date,-25} {NumberFormat.NumberToHumanReadableSize((long)string_list.filesize),-9} {string_list.filepath}";
+        string answer = $"{index_start + 1,-4} | {string_list.score.ToString("0.00"),-5} {string_list.date,-25} {NumberFormat.NumberToHumanReadableSize((long)string_list.filesize),-9} {string_list.filetype,-6} {string_list.filepath}";
         return answer;
         // throw new NotImplementedException();
     }
