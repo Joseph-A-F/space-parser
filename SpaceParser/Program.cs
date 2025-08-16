@@ -7,8 +7,8 @@ public class Program
     public static void Main(string[] args)
     {
         // string[] test_path = { "~/" };
-        Directory.SetCurrentDirectory("/Users/nausetjf");
-        SpaceParser parser = new SpaceParser();
+        // Directory.SetCurrentDirectory("/Users/nausetjf");
+        SpaceParser parser = new SpaceParser(args);
 
     }
 }

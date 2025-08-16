@@ -3,23 +3,27 @@
 
 using System.Data;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 
 namespace space_parser;
 
 public class SpaceParser
 {
+
+    public FileIndex index;
     public Parser parser; //handles the file traversal and sends information to the display to be rendered to the user
     public ParserDisplay display; // handles displaying the list to the user 
+    public DisplayUserInput input;
     private string[] args;
     private bool running;
     private string working_directory;
 
-    public FileIndex index;
     public object file_index_lock;
 
-    public SpaceParser()
+    public SpaceParser(string[] args)
     {
-        this.args = new string[] { "" };
+        // args = args;
+        this.args = args;
         this.TranscribeArguments();
         this.display = new ParserDisplay(this);
         this.index = new FileIndex(this);
@@ -39,8 +43,11 @@ public class SpaceParser
 
     public void TranscribeArguments()
     {
-        // working_directory = args[0];
-        // throw new NotImplementedException();
+        // TODO 
+        if (args.Length == 1)
+        {
+            Directory.SetCurrentDirectory(args[0]);
+        }
     }
 }
 

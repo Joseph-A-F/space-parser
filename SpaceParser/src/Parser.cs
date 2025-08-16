@@ -84,7 +84,7 @@ public class Parser : IParser
         try
         {
             var dirInfo = new DirectoryInfo(path);
-            var files = dirInfo.GetFiles(); // Triggers access check            return true;
+            var files = dirInfo.GetFiles(); // Triggers access check            
             return true;
         }
         catch (UnauthorizedAccessException)
