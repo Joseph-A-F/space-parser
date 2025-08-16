@@ -14,6 +14,8 @@ public class NumberFormat
         string answer = "";
         long size = number;
         int index = 0;
+
+
         while (size >= formatsep && index < units.Length)
         {
             size /= formatsep;

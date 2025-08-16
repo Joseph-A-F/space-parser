@@ -28,9 +28,13 @@ public class ParserDisplay
     private void Loop()
     {
 
+        bool draw = true;
         this.Update();
-        this.Draw();
-        Thread.Sleep(500);
+        if (draw)
+        {
+            this.Draw();
+        }
+        Thread.Sleep(100);
     }
 
     public void Update()

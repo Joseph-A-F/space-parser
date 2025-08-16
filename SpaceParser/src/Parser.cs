@@ -33,7 +33,7 @@ public class Parser : IParser
 
     public void parse_directory(string working_directory)
     {
-        if (!CanAccess(working_directory))
+        if (CanAccess(working_directory))
             this.spaceParser.index.append(working_directory);
         try
         {
@@ -61,7 +61,7 @@ public class Parser : IParser
 
         }
         catch (UnauthorizedAccessException)
-        { }
+        { System.Console.WriteLine("unauthorized exception "); }
     }
 
     private static bool CanAccess(string path)

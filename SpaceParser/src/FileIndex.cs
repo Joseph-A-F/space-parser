@@ -37,7 +37,6 @@ public class FileNode : IComparable
 }
 
 public class FileIndex // needs to be in a lock in order to be written to.
-//  perhaps this class could have its own lock to abstract it 
 {
     public List<FileNode> files;
     public SpaceParser spaceParser;
@@ -51,60 +50,95 @@ public class FileIndex // needs to be in a lock in order to be written to.
         this.spaceParser = spaceParser;
     }
 
-    public void append(string filepath)
+    public async void append(string filepath)
     {
         if (!Path.Exists(filepath))
         {
             return;
         }
         if (File.Exists(filepath)) append_file(filepath);
-        if (Directory.Exists(filepath)) append_folder(filepath);
+        else if (Directory.Exists(filepath)) append_folder(filepath);
     }
 
     private void append_folder(string filepath)
     {
-        string filename = Path.GetFileName(filepath);
-        FileAttributes fileAttributes = File.GetAttributes(filepath);
-        DateTime last_access_date = File.GetCreationTime(filepath);
-        long filesize = DirectorySize(new DirectoryInfo(filepath));
-        FileNode newfile = new FileNode(filename, filepath, last_access_date, filesize);
-        newfile.filetype = "Folder";
+        // System.Console.WriteLine(filepath);
+        try
+        {
+            string filename = Path.GetFileName(filepath);
 
-        // System.Console.WriteLine($"appending {filepath}");
+            DateTime last_access_date = File.GetLastWriteTime(filepath);
 
-        files.Add(newfile);
-        this.rescore();
+            long filesize = DirectorySize(filepath);
+            // System.Console.WriteLine($"filesize {filesize}");
+            FileNode newfile = new FileNode(filename, filepath, last_access_date, filesize);
+
+            newfile.filetype = "Folder";
+
+
+            // System.Console.WriteLine($"appending {filepath}");
+
+            files.Add(newfile);
+            this.rescore();
+        }
+        catch (Exception)
+        {
+            System.Console.WriteLine($"oops");
+            throw;
+        }
+    }
+
+    private long DirectorySize(string filepath)
+    {
+        long answer = 0;
+        try
+        {
+            string[] files = Directory.GetFiles(filepath, "*.*", SearchOption.AllDirectories);
+            foreach (var file in files)
+            {
+                answer += new FileInfo(file).Length;
+            }
+
+        }
+        catch (System.Exception ex)
+        {
+            // TODO
+        }
+        return answer;
+        // throw new NotImplementedException();
     }
 
     private long DirectorySize(DirectoryInfo directoryInfo)
     {
         long answer = 0;
-        FileInfo[] files;
-        DirectoryInfo[] dirs;
+        // string[] files = Directory.GetFiles()
 
-        try
-        {
-            files = directoryInfo.GetFiles();
-            dirs = directoryInfo.GetDirectories();
-        }
-        catch (UnauthorizedAccessException)
-        {
-            return 0;
+        // FileInfo[] files;
+        // DirectoryInfo[] dirs;
 
-        }
-        catch (IOException)
-        {
-            return 0;
+        // try
+        // {
+        //     files = directoryInfo.GetFiles();
+        //     dirs = directoryInfo.GetDirectories();
+        // }
+        // catch (UnauthorizedAccessException)
+        // {
+        //     return 0;
 
-        }
-        foreach (var file in files)
-        {
-            answer += file.Length;
-        }
-        foreach (var dir in dirs)
-        {
-            answer += DirectorySize(dir);
-        }
+        // }
+        // catch (IOException)
+        // {
+        //     return 0;
+
+        // }
+        // foreach (var file in files)
+        // {
+        //     answer += file.Length;
+        // }
+        // foreach (var dir in dirs)
+        // {
+        //     answer += DirectorySize(dir);
+        // }
 
         return answer;
     }
@@ -113,7 +147,7 @@ public class FileIndex // needs to be in a lock in order to be written to.
     {
         string filename = Path.GetFileName(filepath);
         FileAttributes fileAttributes = File.GetAttributes(filepath);
-        DateTime last_access_date = File.GetCreationTime(filepath);
+        DateTime last_access_date = File.GetLastWriteTime(filepath);
         long filesize = new FileInfo(filepath).Length;
 
         FileNode newfile = new FileNode(filename, filepath, last_access_date, filesize);
@@ -130,7 +164,7 @@ public class FileIndex // needs to be in a lock in order to be written to.
             ulong max_size = 0;
             long max_difference = 0;
             DateTime now = DateTime.Now;
-            foreach (var file in files)
+            foreach (FileNode file in files)
             {
                 ulong size = (ulong)file.filesize;
                 DateTime file_date = file.date;
@@ -139,10 +173,11 @@ public class FileIndex // needs to be in a lock in order to be written to.
                 if (size > max_size) max_size = size;
                 if (difference > max_difference) max_difference = difference;
             }
-            foreach (var file in files)
+            foreach (FileNode file in files)
             {
-                double normalized_size = (file.filesize / (double)max_size);
-                double normalized_difference = (now.CompareTo(file.date) / max_difference);
+                double normalized_size = file.filesize / (double)max_size;
+                double normalized_difference = now.CompareTo(file.date) / max_difference;
+
                 double new_score = 0.5 * normalized_difference + 0.5 * normalized_size;
                 file.score = new_score;
             }
