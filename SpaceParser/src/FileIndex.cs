@@ -108,41 +108,6 @@ public class FileIndex // needs to be in a lock in order to be written to.
         // throw new NotImplementedException();
     }
 
-    private long DirectorySize(DirectoryInfo directoryInfo)
-    {
-        long answer = 0;
-        // string[] files = Directory.GetFiles()
-
-        // FileInfo[] files;
-        // DirectoryInfo[] dirs;
-
-        // try
-        // {
-        //     files = directoryInfo.GetFiles();
-        //     dirs = directoryInfo.GetDirectories();
-        // }
-        // catch (UnauthorizedAccessException)
-        // {
-        //     return 0;
-
-        // }
-        // catch (IOException)
-        // {
-        //     return 0;
-
-        // }
-        // foreach (var file in files)
-        // {
-        //     answer += file.Length;
-        // }
-        // foreach (var dir in dirs)
-        // {
-        //     answer += DirectorySize(dir);
-        // }
-
-        return answer;
-    }
-
     private void append_file(string filepath)
     {
         string filename = Path.GetFileName(filepath);

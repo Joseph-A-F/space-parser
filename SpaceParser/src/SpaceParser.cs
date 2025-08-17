@@ -13,7 +13,7 @@ public class SpaceParser
     public FileIndex index;
     public Parser parser; //handles the file traversal and sends information to the display to be rendered to the user
     public ParserDisplay display; // handles displaying the list to the user 
-    public DisplayUserInput input;
+
     private string[] args;
     private bool running;
     private string working_directory;
