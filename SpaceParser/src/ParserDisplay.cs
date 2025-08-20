@@ -1,5 +1,3 @@
-using System.ComponentModel;
-
 namespace space_parser;
 
 public class ParserDisplay
@@ -14,10 +12,9 @@ public class ParserDisplay
 
     public void Run()
     {
-        System.Console.WriteLine("Display Thread Starting...");
+        Console.WriteLine("Display Thread Starting...");
         Console.Clear();
         Console.WriteLine("test");
-
         while (true)
         {
             Loop();
@@ -39,7 +36,15 @@ public class ParserDisplay
 
     public void Update()
     {
-        // throw new NotImplementedException();
+        if (Console.KeyAvailable)
+        {
+            System.Console.WriteLine("key available");
+            ConsoleKeyInfo key = Console.ReadKey();
+            if (key.Key == ConsoleKey.Q)
+            {
+                this.spaceParser.exit();
+            }
+        }
     }
 
     public void Draw()
@@ -51,16 +56,17 @@ public class ParserDisplay
         if (working) status = "currently parsing";
         else status = "done";
 
-        System.Console.WriteLine($"SpaceParser ================================= {status} ");
+        Console.WriteLine($"SpaceParser ================================= {status} ");
 
         int line_space_available_to_list = Console.BufferHeight - 2;
         int line_start = 2;
         int line_end = line_start + line_space_available_to_list;
 
         // System.Console.WriteLine($"line start {line_start} line end {line_end}");
-        System.Console.WriteLine($"files indexed {this.spaceParser.index.files.Count}");
+        Console.WriteLine($"files indexed {this.spaceParser.index.files.Count}");
         string list_lines = this.spaceParser.index.getfiles(0, line_end - 5);
-        System.Console.WriteLine(list_lines);
-        System.Console.WriteLine($"Type the file's number to reveal the file your system's file explorer");
+        Console.WriteLine(list_lines);
+        
+        Console.WriteLine($"Type the file's number to reveal the file your system's file explorer");
     }
 }

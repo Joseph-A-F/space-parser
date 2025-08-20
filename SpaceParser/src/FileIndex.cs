@@ -178,7 +178,12 @@ public class FileIndex // needs to be in a lock in order to be written to.
         FileNode string_list = files[index_start];
 
 
-        string answer = $"{index_start + 1,-4} | {string_list.score.ToString("0.00"),-5} {string_list.date,-25} {NumberFormat.NumberToHumanReadableSize((long)string_list.filesize),-9} {string_list.filetype,-6} {string_list.filepath}";
+        string v = string_list.score.ToString("0.00");
+        DateTime date = string_list.date;
+        string v1 = NumberFormat.NumberToHumanReadableSize((long)string_list.filesize);
+        string filetype = string_list.filetype;
+        string filepath = string_list.filepath;
+        string answer = $"{index_start + 1,-4} | {v,-5} {date,-25} {v1,-9} {filetype,-6} {filepath}";
         return answer;
         // throw new NotImplementedException();
     }
