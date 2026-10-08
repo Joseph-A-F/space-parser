@@ -120,9 +120,6 @@ public class Parser : IParser
         {
             return false;
         }
-
-        return false;
-        // throw new NotImplementedException();
     }
 
     public void Start()

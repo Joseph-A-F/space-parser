@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.Serialization;
 using numbers;
 
@@ -8,7 +9,7 @@ public class FileNode : IComparable
     public DateTime date;
     public string path;
     public string filename;
-    public long filesize;
+    public ulong filesize;
     public double score;
     public string filepath;
     internal string filetype;
@@ -16,12 +17,13 @@ public class FileNode : IComparable
     public FileNode(string filename,
                     string filepath,
                     DateTime last_access_date,
-                    long filesize)
+                    long filesize
+                    )
     {
         this.filename = filename;
         this.filepath = filepath;
         this.date = last_access_date;
-        this.filesize = filesize;
+        this.filesize = (ulong)filesize;
     }
 
     public int CompareTo(object? obj)
@@ -40,9 +42,9 @@ public class FileIndex // needs to be in a lock in order to be written to.
 {
     public List<FileNode> files;
     public SpaceParser spaceParser;
-
+    private ulong max_size;
+    private int max_difference;
     public readonly object index_lock = new object();
-
 
     public FileIndex(SpaceParser spaceParser)
     {
@@ -124,10 +126,10 @@ public class FileIndex // needs to be in a lock in order to be written to.
 
     public void rescore()
     {
-        lock (this.index_lock)
+        lock (index_lock)
         {
-            ulong max_size = 0;
-            long max_difference = 0;
+            max_size = 0;
+            max_difference = 0;
             DateTime now = DateTime.Now;
             foreach (FileNode file in files)
             {
@@ -136,7 +138,7 @@ public class FileIndex // needs to be in a lock in order to be written to.
                 long difference = now.CompareTo(file_date);
 
                 if (size > max_size) max_size = size;
-                if (difference > max_difference) max_difference = difference;
+                if (difference > max_difference) max_difference = (int)difference;
             }
             foreach (FileNode file in files)
             {
@@ -176,15 +178,73 @@ public class FileIndex // needs to be in a lock in order to be written to.
     {
         // System.Console.WriteLine($"index start {index_start}");
         FileNode string_list = files[index_start];
+        int width_of_buffer = Console.BufferWidth;
 
+        string score = string_list.score.ToString("0.00");
 
-        string v = string_list.score.ToString("0.00");
         DateTime date = string_list.date;
-        string v1 = NumberFormat.NumberToHumanReadableSize((long)string_list.filesize);
+
+        string filesize_percentage_str = $" ({(float)string_list.filesize / (float)this.max_size})";
+        string filesize = NumberFormat.BytesToHumanReadableFileSize((long)string_list.filesize) + filesize_percentage_str;
+
+
         string filetype = string_list.filetype;
+
         string filepath = string_list.filepath;
-        string answer = $"{index_start + 1,-4} | {v,-5} {date,-25} {v1,-9} {filetype,-6} {filepath}";
+
+
+        string answer = $"{index_start + 1,-4} | {score,-5} {date,-25} {filesize,-20} {filetype,-6} {filepath}";
+
+        if (answer.Length > width_of_buffer)
+        {
+            answer = answer.Substring(0, width_of_buffer);
+        }
+
         return answer;
         // throw new NotImplementedException();
     }
+
+
+    public void RevealFileIndexInExplorer(int file_index)
+    {
+        if (file_index < 0 || file_index >= this.files.Count) return;
+        var file = this.files[file_index];
+        var filepath = file.filepath;
+        var path_to_open = Path.GetPathRoot(filepath);
+        var process = new Process();
+        process.StartInfo.FileName = "open";
+        if (Directory.Exists(filepath))
+        {
+            process.StartInfo.Arguments = $"\"{filepath}\"";
+        }
+        else
+        {
+            process.StartInfo.Arguments = $"-R \"{filepath}\"";
+        }
+        process.Start();
+    }
+
+    public void DeleteFileIndex(int file_index)
+    {
+        if (file_index < 0 || file_index >= this.files.Count) return;
+        var file = this.files[file_index];
+        var filepath = file.filepath;
+        try
+        {
+            if (Directory.Exists(filepath))
+            {
+                Directory.Delete(filepath, true);
+            }
+            else if (File.Exists(filepath))
+            {
+                File.Delete(filepath);
+            }
+            this.files.RemoveAt(file_index);
+        }
+        catch (Exception)
+        {
+            // Ignore for now
+        }
+    }
 }
+

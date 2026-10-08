@@ -6,13 +6,14 @@ namespace numbers;
 
 public class NumberFormat
 {
-    public static string NumberToHumanReadableSize(long number)
+    // only goes up to TB
+    public static string BytesToHumanReadableFileSize(long number_bytes)
     {
         int formatsep = 1024;
         string[] units = { "B", "KB", "MB", "GB", "TB" };
 
         string answer = "";
-        long size = number;
+        long size = number_bytes;
         int index = 0;
 
 
@@ -24,4 +25,6 @@ public class NumberFormat
         answer = $"{size}{units[index]}";
         return answer;
     }
+
+
 }

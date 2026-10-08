@@ -13,13 +13,17 @@ public class SpaceParser
     public FileIndex index;
     public Parser parser; //handles the file traversal and sends information to the display to be rendered to the user
     public ParserDisplay display; // handles displaying the list to the user 
-    // public ParserIOService iOService;
+    public ParserConsoleInput iOService;
 
     private string[] args;
     private bool running;
     private string working_directory;
 
     public object file_index_lock;
+    public bool wait;
+    private Thread display_thread;
+    private Thread parser_thread;
+    private Thread io_thread;
 
     public SpaceParser(string[] args)
     {
@@ -29,19 +33,20 @@ public class SpaceParser
         this.display = new ParserDisplay(this);
         this.index = new FileIndex(this);
         this.parser = new Parser(this);
-        // this.iOService = new ParserIOService(this);
+        this.iOService = new ParserConsoleInput(this);
         this.running = true;
         this.Run();
     }
 
     private void Run()
     {
-        Thread display_thread = new Thread(new ThreadStart(display.Run));
-        Thread parser_thread = new Thread(new ThreadStart(parser.Run));
-        // Thread io_thread = new Thread(new ThreadStart(iOService.Run));
+        this.display_thread = new Thread(new ThreadStart(display.Run));
+        this.parser_thread = new Thread(new ThreadStart(parser.Run));
+        this.io_thread = new Thread(new ThreadStart(iOService.Run));
 
         parser_thread.Start();
         display_thread.Start();
+        io_thread.Start();
 
     }
 
@@ -61,5 +66,11 @@ public class SpaceParser
         Console.Clear();
         Console.SetCursorPosition(0, 0);
         Environment.Exit(0);
+    }
+
+    public void PauseParsing()
+    {
+        // this.parser_thread.Suspend();
+        // throw new NotImplementedException();
     }
 }

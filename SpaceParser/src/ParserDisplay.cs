@@ -4,10 +4,14 @@ public class ParserDisplay
 {
     public Parser parser;
     public SpaceParser spaceParser;
+    public bool filequery_mode;
+    private string list_buffer;
 
     public ParserDisplay(SpaceParser spaceParser)
     {
         this.spaceParser = spaceParser;
+        this.filequery_mode = false;
+        this.list_buffer = "";
     }
 
     public void Run()
@@ -36,19 +40,18 @@ public class ParserDisplay
 
     public void Update()
     {
-        if (Console.KeyAvailable)
-        {
-            System.Console.WriteLine("key available");
-            ConsoleKeyInfo key = Console.ReadKey();
-            if (key.Key == ConsoleKey.Q)
-            {
-                this.spaceParser.exit();
-            }
-        }
+
     }
+
+    private bool drawn_query_prompt = false;
 
     public void Draw()
     {
+        if (filequery_mode && drawn_query_prompt)
+        {
+            return;
+        }
+
         Console.Clear();
         Console.SetCursorPosition(0, 0);
         bool working = this.spaceParser.parser.working;
@@ -64,9 +67,20 @@ public class ParserDisplay
 
         // System.Console.WriteLine($"line start {line_start} line end {line_end}");
         Console.WriteLine($"files indexed {this.spaceParser.index.files.Count}");
-        string list_lines = this.spaceParser.index.getfiles(0, line_end - 5);
-        Console.WriteLine(list_lines);
-        
-        Console.WriteLine($"Type the file's number to reveal the file your system's file explorer");
+
+        this.list_buffer = this.spaceParser.index.getfiles(0, line_end - 5);
+        Console.WriteLine(list_buffer);
+
+        if (filequery_mode)
+        {
+            Console.WriteLine($"Type Number to perform action:");
+            drawn_query_prompt = true;
+        }
+        else
+        {
+            Console.WriteLine($"[Q] Quit || [F] select a file from the list to reveal it your system's file explorer || [D] select a file to delete it");
+            drawn_query_prompt = false;
+        }
+
     }
 }

@@ -1,0 +1,36 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "dotnet",
+			"task": "watch SpaceParser",
+			"file": "/Users/nausetjf/CSharpFiles/space-parser/SpaceParser/SpaceParser.csproj",
+			"problemMatcher": [],
+			"label": "dotnet: watch SpaceParser"
+		},
+		{
+			"label": "run full filesystem test",
+			"type": "shell",
+			"command": "dotnet run --project SpaceParser /",
+			"problemMatcher": []
+		},
+		{
+			"label": "watch full filesystem test",
+			"type": "shell",
+			"command": "dotnet watch --project SpaceParser /",
+			"problemMatcher": []
+		},
+		{
+			"label": "watch home test",
+			"type": "shell",
+			"command": "dotnet watch --project SpaceParser ~/",
+			"problemMatcher": []
+		},
+		{
+			"label": "publish and install",
+			"type": "shell",
+			"command": "dotnet publish -c Release --self-contained true \n cp  SpaceParser/bin/Release/net9.0/osx-arm64/publish/SpaceParser ~/bin",
+			"problemMatcher": []
+		}
+	]
+}
